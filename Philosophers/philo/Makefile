@@ -1,6 +1,7 @@
 NAME = philo
-SRCS = ./main.c
-FLAGS = -Wall -Wextra -Werror -g -pthread
+SRCS = ./main.c ./ft_atoi.c
+FLAGS = -Wall -Wextra -Werror -g -pthread 
+# -fsanitize=thread -g3
 
 all: $(NAME)
 
