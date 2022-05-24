@@ -1,5 +1,5 @@
 NAME = philo
-SRCS = ./main.c ./ft_atoi.c
+SRCS = ./main.c ./errorhandling.c ./ft_atoi.c
 FLAGS = -Wall -Wextra -Werror -g -pthread 
 # -fsanitize=thread -g3
 

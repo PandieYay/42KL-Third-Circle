@@ -23,13 +23,22 @@ typedef struct s_array {
 	int				philos;
 	int				forks;
 	int				deathtimer;
-	int				oritimer;
 	int				eattimer;
 	int				sleeptimer;
 	int				timesphiloeat;
+	struct timeval	tv;
 	pthread_mutex_t	lock;
 }	t_array;
 
+typedef struct s_philos {
+	int			deathtimer;
+	int			sleeptimer;
+	int			timesate;
+	pthread_t	id;
+	t_array		*array;
+}	t_philos;
+
 int	ft_atoi(const char *str);
+int	errorhandling(t_array *array);
 
 #endif
