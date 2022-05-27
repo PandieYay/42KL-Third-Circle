@@ -21,24 +21,36 @@
 
 typedef struct s_array {
 	int				philos;
-	int				forks;
+	int				philosinitiated;
+	int				philodead;
 	int				deathtimer;
 	int				eattimer;
 	int				sleeptimer;
 	int				timesphiloeat;
+	int				philomusteat;
 	struct timeval	tv;
 	pthread_mutex_t	lock;
 }	t_array;
 
 typedef struct s_philos {
-	int			deathtimer;
-	int			sleeptimer;
-	int			timesate;
-	pthread_t	id;
-	t_array		*array;
+	long			lastate;
+	long			sleeptimer;
+	int				timesate;
+	int				eatnum;
+	int				index;
+	pthread_t		id;
+	pthread_mutex_t	fork;
+	t_array			*array;
+	struct s_philos	*next;
 }	t_philos;
 
-int	ft_atoi(const char *str);
-int	errorhandling(t_array *array);
+int		ft_atoi(const char *str);
+int		errorhandling(t_array *array);
+void	msleep(int ms, t_array *array);
+void	takeforks(t_philos *philo);
+void	deathtimer(t_philos *philo);
+void	philoeating(t_philos *philo);
+void	philosleep(t_philos *philo);
+void	philothink(t_philos *philo);
 
 #endif

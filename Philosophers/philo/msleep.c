@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errorhandling.c                                    :+:      :+:    :+:   */
+/*   msleep.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: edlim <edlim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/24 11:25:24 by edlim             #+#    #+#             */
-/*   Updated: 2022/05/24 11:25:25 by edlim            ###   ########.fr       */
+/*   Created: 2022/05/26 14:47:01 by edlim             #+#    #+#             */
+/*   Updated: 2022/05/26 14:47:02 by edlim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	errorhandling(t_array *array)
+void	msleep(int ms, t_array *array)
 {
-	struct timeval	tv;
+	long	start_time;
+	long	current_time;
 
-	gettimeofday(&tv, NULL);
-	if (array->philos == 1)
+	gettimeofday(&array->tv, NULL);
+	start_time = (array->tv.tv_sec * 1000) + (array->tv.tv_usec / 1000);
+	current_time = (array->tv.tv_sec * 1000) + (array->tv.tv_usec / 1000);
+	while (current_time - start_time < ms)
 	{
-		printf("\033[0;34m%ld", (tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-		printf(" 1 is thinking\n");
-		printf("\033[0;31m%ld", (tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-		printf(" 1 died\n");
-		return (-1);
+		usleep(100);
+		gettimeofday(&array->tv, NULL);
+		current_time = (array->tv.tv_sec * 1000) + (array->tv.tv_usec / 1000);
 	}
-	return (0);
 }
