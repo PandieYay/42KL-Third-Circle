@@ -48,7 +48,6 @@ int		ft_atoi(const char *str);
 int		errorhandling(t_array *array);
 void	msleep(int ms, t_array *array);
 void	takeforks(t_philos *philo);
-void	deathtimer(t_philos *philo);
 void	philoeating(t_philos *philo);
 void	philosleep(t_philos *philo);
 void	philothink(t_philos *philo);

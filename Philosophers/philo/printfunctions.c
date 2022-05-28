@@ -34,11 +34,10 @@ void	philoeating(t_philos *philo)
 	if (philo->array->philodead == 0)
 	{
 		gettimeofday(&philo->array->tv, NULL);
-		printf("\033[0;32m%ld", (philo->array->tv.tv_sec * 1000)
-			+ (philo->array->tv.tv_usec / 1000));
-		printf(" %d is eating\n", philo->index + 1);
 		philo->lastate = (philo->array->tv.tv_sec * 1000)
 			+ (philo->array->tv.tv_usec / 1000);
+		printf("\033[0;32m%ld", philo->lastate);
+		printf(" %d is eating\n", philo->index + 1);
 		++philo->timesate;
 	}
 	pthread_mutex_unlock(&philo->array->lock);
