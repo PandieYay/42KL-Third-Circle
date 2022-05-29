@@ -68,3 +68,17 @@ void	philothink(t_philos *philo)
 	}
 	pthread_mutex_unlock(&philo->array->lock);
 }
+
+void	mutex_forks(t_philos *philo, char c)
+{
+	if (c == 'L')
+	{
+		pthread_mutex_lock(&philo->fork);
+		pthread_mutex_lock(&philo->next->fork);
+	}
+	else if (c == 'U')
+	{
+		pthread_mutex_unlock(&philo->fork);
+		pthread_mutex_unlock(&philo->next->fork);
+	}
+}

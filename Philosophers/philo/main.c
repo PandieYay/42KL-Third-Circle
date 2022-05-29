@@ -12,27 +12,19 @@
 
 #include "philo.h"
 
-static void	initializephilos(t_philos *philo, t_array *array)
+static int	checkphilodead(t_philos *philo)
 {
-	int	i;
-
-	i = 0;
-	while (i < array->philos)
+	pthread_mutex_lock(&philo->array->lock);
+	if (philo->array->philodead == 1)
 	{
-		gettimeofday(&array->tv, NULL);
-		philo[i].sleeptimer = array->sleeptimer;
-		philo[i].timesate = 0;
-		philo[i].eatnum = array->timesphiloeat;
-		philo[i].index = i;
-		pthread_mutex_init(&philo[i].fork, NULL);
-		philo[i].array = array;
-		philo[i].next = &philo[i + 1];
-		i++;
+		pthread_mutex_unlock(&philo->array->lock);
+		return (1);
 	}
-	philo[i - 1].next = &philo[0];
+	pthread_mutex_unlock(&philo->array->lock);
+	return (0);
 }
 
-void	deathtimer(t_philos *philo)
+static void	deathtimer(t_philos *philo)
 {
 	long	currentime;
 
@@ -50,19 +42,7 @@ void	deathtimer(t_philos *philo)
 	pthread_mutex_unlock(&philo->array->lock);
 }
 
-int	checkphilodead(t_philos *philo)
-{
-	pthread_mutex_lock(&philo->array->lock);
-	if (philo->array->philodead == 1)
-	{
-		pthread_mutex_unlock(&philo->array->lock);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->array->lock);
-	return (0);
-}
-
-static void	*routine(void	*arg)
+void	*routine(void	*arg)
 {
 	t_philos	*philo;
 
@@ -77,22 +57,20 @@ static void	*routine(void	*arg)
 	philothink(philo);
 	while (checkphilodead(philo) == 0)
 	{
-		pthread_mutex_lock(&philo->fork);
-		pthread_mutex_lock(&philo->next->fork);
+		mutex_forks(philo, 'L');
 		deathtimer(philo);
 		takeforks(philo);
 		philoeating(philo);
 		msleep(philo->array->eattimer, philo->array);
 		philosleep(philo);
-		pthread_mutex_unlock(&philo->fork);
-		pthread_mutex_unlock(&philo->next->fork);
+		mutex_forks(philo, 'U');
 		msleep(philo->array->sleeptimer, philo->array);
 		philothink(philo);
 	}
 	return (NULL);
 }
 
-static void	*routine2(void	*arg)
+void	*routine2(void	*arg)
 {
 	t_philos	*philo;
 
@@ -107,45 +85,23 @@ static void	*routine2(void	*arg)
 	philothink(philo);
 	while (checkphilodead(philo) == 0 && philo->timesate < philo->eatnum)
 	{
-		pthread_mutex_lock(&philo->fork);
-		pthread_mutex_lock(&philo->next->fork);
+		mutex_forks(philo, 'L');
 		deathtimer(philo);
 		takeforks(philo);
 		philoeating(philo);
 		msleep(philo->array->eattimer, philo->array);
 		philosleep(philo);
-		pthread_mutex_unlock(&philo->fork);
-		pthread_mutex_unlock(&philo->next->fork);
+		mutex_forks(philo, 'U');
 		msleep(philo->array->sleeptimer, philo->array);
 		philothink(philo);
 	}
 	return (NULL);
 }
 
-static void	initializevariables(t_array *array, int argc, char **argv)
-{
-	array->philos = ft_atoi(argv[1]);
-	array->philosinitiated = 0;
-	array->deathtimer = ft_atoi(argv[2]);
-	array->eattimer = ft_atoi(argv[3]);
-	array->sleeptimer = ft_atoi(argv[4]);
-	array->timesphiloeat = 0;
-	array->philomusteat = 0;
-	array->philodead = 0;
-	pthread_mutex_init(&array->lock, NULL);
-	gettimeofday(&array->tv, NULL);
-	if (argc == 6)
-	{
-		array->timesphiloeat = ft_atoi(argv[5]);
-		array->philomusteat = 1;
-	}
-}
-
 int	main(int argc, char **argv)
 {
 	t_array		array;
 	t_philos	*philo;
-	int			i;
 
 	if (argc >= 5 && argc <= 6)
 		initializevariables(&array, argc, argv);
@@ -159,25 +115,7 @@ int	main(int argc, char **argv)
 	printf("Philos: %d\n", array.philos);
 	initializephilos(philo, &array);
 	if (argc == 5)
-	{
-		i = -1;
-		while (++i < array.philos)
-			pthread_create(&philo[i].id, NULL, &routine, &philo[i]);
-		i = -1;
-		array.philosinitiated = 1;
-		while (++i < array.philos)
-			pthread_join(philo[i].id, NULL);
-	}
-	else
-	{
-		i = -1;
-		while (++i < array.philos)
-			pthread_create(&philo[i].id, NULL, &routine2, &philo[i]);
-		i = -1;
-		array.philosinitiated = 1;
-		while (++i < array.philos)
-			pthread_join(philo[i].id, NULL);
-	}
+		philosophers(philo, &array, argc);
 	return (0);
 }
 

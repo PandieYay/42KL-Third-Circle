@@ -51,5 +51,11 @@ void	takeforks(t_philos *philo);
 void	philoeating(t_philos *philo);
 void	philosleep(t_philos *philo);
 void	philothink(t_philos *philo);
+void	initializevariables(t_array *array, int argc, char **argv);
+void	initializephilos(t_philos *philo, t_array *array);
+void	mutex_forks(t_philos *philo, char c);
+void	philosophers(t_philos *philo, t_array *array, int argc);
+void	*routine(void	*arg);
+void	*routine2(void	*arg);
 
 #endif
