@@ -45,7 +45,8 @@ typedef struct s_philos {
 }	t_philos;
 
 int		ft_atoi(const char *str);
-int		errorhandling(t_array *array);
+char	ft_atoichecker(const char *str);
+int		errorhandling(t_array *array, char **argv);
 void	msleep(int ms, t_array *array);
 void	takeforks(t_philos *philo);
 void	philoeating(t_philos *philo);

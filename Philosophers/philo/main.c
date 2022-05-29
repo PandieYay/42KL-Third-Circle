@@ -100,22 +100,29 @@ void	*routine2(void	*arg)
 
 int	main(int argc, char **argv)
 {
+	int			i;
 	t_array		array;
 	t_philos	*philo;
 
 	if (argc >= 5 && argc <= 6)
 		initializevariables(&array, argc, argv);
 	else
+	{
+		write(1, "\033[0;31mError\n", 14);
 		return (-1);
-	if (errorhandling(&array) == -1)
+	}
+	if (errorhandling(&array, argv) == -1)
 		return (-1);
 	philo = malloc(sizeof(t_philos) * array.philos);
 	if (!philo)
 		return (-1);
-	printf("Philos: %d\n", array.philos);
 	initializephilos(philo, &array);
-	if (argc == 5)
-		philosophers(philo, &array, argc);
+	i = -1;
+	philosophers(philo, &array, argc);
+	i = -1;
+	array.philosinitiated = 1;
+	while (++i < array.philos)
+		pthread_join(philo[i].id, NULL);
 	return (0);
 }
 

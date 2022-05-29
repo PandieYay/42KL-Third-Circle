@@ -12,10 +12,30 @@
 
 #include "philo.h"
 
-int	errorhandling(t_array *array)
+static int	checkarg(char **argv)
+{
+	int	i;
+	int	k;
+
+	i = 0;
+	while (argv[++i] != NULL)
+	{
+		k = i;
+		if (ft_atoichecker(argv[i]) == 'K')
+		{
+			write(1, "\033[0;31mError\n", 14);
+			return (-1);
+		}
+	}
+	return (0);
+}
+
+int	errorhandling(t_array *array, char **argv)
 {
 	struct timeval	tv;
 
+	if (checkarg(argv) == -1)
+		return (-1);
 	gettimeofday(&tv, NULL);
 	if (array->philos == 1)
 	{

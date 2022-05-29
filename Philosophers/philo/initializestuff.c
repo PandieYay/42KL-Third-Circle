@@ -55,24 +55,15 @@ void	philosophers(t_philos *philo, t_array *array, int argc)
 {
 	int	i;
 
+	i = -1;
 	if (argc == 5)
 	{
-		i = -1;
 		while (++i < array->philos)
 			pthread_create(&philo[i].id, NULL, &routine, &philo[i]);
-		i = -1;
-		array->philosinitiated = 1;
-		while (++i < array->philos)
-			pthread_join(philo[i].id, NULL);
 	}
 	else
 	{
-		i = -1;
 		while (++i < array->philos)
 			pthread_create(&philo[i].id, NULL, &routine2, &philo[i]);
-		i = -1;
-		array->philosinitiated = 1;
-		while (++i < array->philos)
-			pthread_join(philo[i].id, NULL);
 	}
 }
