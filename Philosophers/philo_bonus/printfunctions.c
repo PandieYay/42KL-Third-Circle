@@ -69,7 +69,7 @@ void	philothink(t_philos *philo)
 	sem_post(philo->array->lock);
 }
 
-void	mutex_forks(t_philos *philo, char c)
+void	sem_forks(t_philos *philo, char c)
 {
 	if (c == 'L')
 	{

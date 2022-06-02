@@ -53,36 +53,38 @@ void	process(t_philos *philo)
 	philothink(philo);
 	while (checkphilodead(philo) == 0)
 	{
-		mutex_forks(philo, 'L');
+		sem_forks(philo, 'L');
 		deathtimer(philo);
 		takeforks(philo);
 		philoeating(philo);
 		msleep(philo->array->eattimer, philo->array);
 		philosleep(philo);
-		mutex_forks(philo, 'U');
+		sem_forks(philo, 'U');
 		msleep(philo->array->sleeptimer, philo->array);
 		philothink(philo);
 	}
 }
 
-void	killall(t_philos *philo, t_array *array)
+void	process2(t_philos *philo)
 {
-	int	i;
-
-	i = 0;
-	while (i < array->philos)
+	sem_wait(philo->array->sync);
+	gettimeofday(&philo->array->tv, NULL);
+	philo->lastate = (philo->array->tv.tv_sec * 1000)
+		+ (philo->array->tv.tv_usec / 1000);
+	philothink(philo);
+	while (philo->timesate < philo->eatnum)
 	{
-		kill(philo[i].pid, SIGTERM);
-		i++;
+		sem_forks(philo, 'L');
+		deathtimer(philo);
+		takeforks(philo);
+		philoeating(philo);
+		msleep(philo->array->eattimer, philo->array);
+		philosleep(philo);
+		sem_forks(philo, 'U');
+		msleep(philo->array->sleeptimer, philo->array);
+		philothink(philo);
 	}
-	sem_close(array->sync);
-	sem_close(array->kill);
-	sem_close(array->fork);
-	sem_close(array->lock);
-	sem_unlink("forks");
-	sem_unlink("sync");
-	sem_unlink("kill");
-	sem_unlink("lock");
+	sem_post(philo->array->kill);
 }
 
 int	main(int argc, char **argv)

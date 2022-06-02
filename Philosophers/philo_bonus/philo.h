@@ -58,9 +58,10 @@ void	philosleep(t_philos *philo);
 void	philothink(t_philos *philo);
 void	initializevariables(t_array *array, int argc, char **argv);
 void	initializephilos(t_philos *philo, t_array *array);
-void	mutex_forks(t_philos *philo, char c);
+void	sem_forks(t_philos *philo, char c);
 int		philosophers(t_philos *philo, t_array *array, int argc);
 void	process(t_philos *philo);
-void	*routine2(void	*arg);
+void	process2(t_philos *philo);
+void	killall(t_philos *philo, t_array *array);
 
 #endif

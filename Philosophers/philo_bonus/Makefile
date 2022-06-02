@@ -1,7 +1,7 @@
 NAME = philo_bonus
 NOTLIBFT = notlibft/ft_atoi.c notlibft/ft_atoichecker.c
 SRCS = ./main.c ./errorhandling.c ./initializestuff.c ./msleep.c ./printfunctions.c
-FLAGS = -Wall -Wextra  -g -pthread -fsanitize=thread
+FLAGS = -Wall -Wextra  -g -pthread
 # -fsanitize=thread -g3
 
 all: $(NAME)

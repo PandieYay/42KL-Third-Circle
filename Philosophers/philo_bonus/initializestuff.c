@@ -57,16 +57,48 @@ void	initializevariables(t_array *array, int argc, char **argv)
 	}
 }
 
+void	killall(t_philos *philo, t_array *array)
+{
+	int	i;
+
+	i = 0;
+	while (i < array->philos)
+	{
+		kill(philo[i].pid, SIGTERM);
+		i++;
+	}
+	sem_close(array->sync);
+	sem_close(array->kill);
+	sem_close(array->fork);
+	sem_close(array->lock);
+	sem_unlink("forks");
+	sem_unlink("sync");
+	sem_unlink("kill");
+	sem_unlink("lock");
+}
+
 int	philosophers(t_philos *philo, t_array *array, int argc)
 {
 	int	i;
 
 	i = -1;
-	while (++i < array->philos)
+	if (argc == 5)
 	{
-		philo[i].pid = fork();
-		if (philo[i].pid == 0)
-			process(&philo[i]);
+		while (++i < array->philos)
+		{
+			philo[i].pid = fork();
+			if (philo[i].pid == 0)
+				process(&philo[i]);
+		}
+	}
+	else
+	{
+		while (++i < array->philos)
+		{
+			philo[i].pid = fork();
+			if (philo[i].pid == 0)
+				process2(&philo[i]);
+		}
 	}
 	i = -1;
 	while (++i < array->philos)
