@@ -12,34 +12,59 @@
 
 #include "philo.h"
 
-static int	checkphilodead(t_philos *philo)
+void	deathtimer(t_philos *philo, t_array *array)
 {
-	pthread_mutex_lock(&philo->array->lock);
-	if (philo->array->philodead == 1)
-	{
-		pthread_mutex_unlock(&philo->array->lock);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->array->lock);
-	return (0);
-}
-
-static void	deathtimer(t_philos *philo)
-{
+	int		i;
 	long	currentime;
 
-	pthread_mutex_lock(&philo->array->lock);
-	gettimeofday(&philo->array->tv, NULL);
-	currentime = (philo->array->tv.tv_sec * 1000)
-		+ (philo->array->tv.tv_usec / 1000);
-	if (currentime - philo->lastate > philo->array->deathtimer
-		&& philo->array->philodead == 0)
+	while (checkphilodead(philo) == 0)
 	{
-		printf("\033[0;31m%ld", currentime);
-		printf(" %d died\n", philo->index + 1);
-		philo->array->philodead = 1;
+		i = -1;
+		while (++i < array->philos)
+		{
+			pthread_mutex_lock(&array->lock);
+			gettimeofday(&array->tv, NULL);
+			currentime = (array->tv.tv_sec * 1000)
+				+ (array->tv.tv_usec / 1000);
+			if (currentime - philo[i].lastate > array->deathtimer
+				&& array->philodead == 0)
+			{
+				printf("\033[0;31m%ld", currentime);
+				printf(" %d died\n", philo[i].index + 1);
+				philo->array->philodead = 1;
+			}
+			pthread_mutex_unlock(&philo->array->lock);
+		}
 	}
-	pthread_mutex_unlock(&philo->array->lock);
+}
+
+void	deathtimer2(t_philos *philo, t_array *array)
+{
+	int		i;
+	long	currentime;
+
+	while (checkphilodead(philo) == 0 && checkphiloeatall(philo, array) == 0)
+	{
+		i = -1;
+		while (++i < array->philos)
+		{
+			if (checkphiloeat(&philo[i]) == 0)
+			{
+				pthread_mutex_lock(&array->lock);
+				gettimeofday(&array->tv, NULL);
+				currentime = (array->tv.tv_sec * 1000)
+					+ (array->tv.tv_usec / 1000);
+				if (currentime - philo[i].lastate > array->deathtimer
+					&& array->philodead == 0)
+				{
+					printf("\033[0;31m%ld", currentime);
+					printf(" %d died\n", philo[i].index + 1);
+					philo->array->philodead = 1;
+				}
+				pthread_mutex_unlock(&philo->array->lock);
+			}
+		}
+	}
 }
 
 void	*routine(void	*arg)
@@ -49,16 +74,17 @@ void	*routine(void	*arg)
 	philo = arg;
 	while (philo->array->philosinitiated != 1)
 		;
-	if ((philo->index + 1) % 2 == 0)
-		msleep(50, philo->array);
+	philothink(philo);
+	pthread_mutex_lock(&philo->array->lock);
 	gettimeofday(&philo->array->tv, NULL);
 	philo->lastate = (philo->array->tv.tv_sec * 1000)
 		+ (philo->array->tv.tv_usec / 1000);
-	philothink(philo);
+	pthread_mutex_unlock(&philo->array->lock);
+	if ((philo->index + 1) % 2 == 0)
+		msleep(50, philo->array);
 	while (checkphilodead(philo) == 0)
 	{
 		mutex_forks(philo, 'L');
-		deathtimer(philo);
 		takeforks(philo);
 		philoeating(philo);
 		msleep(philo->array->eattimer, philo->array);
@@ -86,7 +112,6 @@ void	*routine2(void	*arg)
 	while (checkphilodead(philo) == 0 && philo->timesate < philo->eatnum)
 	{
 		mutex_forks(philo, 'L');
-		deathtimer(philo);
 		takeforks(philo);
 		philoeating(philo);
 		msleep(philo->array->eattimer, philo->array);
@@ -117,13 +142,16 @@ int	main(int argc, char **argv)
 	if (!philo)
 		return (-1);
 	initializephilos(philo, &array);
-	i = -1;
 	philosophers(philo, &array, argc);
-	i = -1;
 	array.philosinitiated = 1;
+	msleep(100, &array);
+	initializedeathtimers(philo, &array, argc);
+	i = -1;
 	while (++i < array.philos)
 		pthread_join(philo[i].id, NULL);
 	return (0);
 }
 
 //tv.tv_sec and tv.tv_usec combine together
+//basically problem right now is that mutex fork takes too long
+//need thread for deathtimer unless you're smart

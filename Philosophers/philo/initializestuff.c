@@ -67,3 +67,14 @@ void	philosophers(t_philos *philo, t_array *array, int argc)
 			pthread_create(&philo[i].id, NULL, &routine2, &philo[i]);
 	}
 }
+
+void	initializedeathtimers(t_philos *philo, t_array *array, int argc)
+{
+	int	i;
+
+	i = -1;
+	if (argc == 5)
+		deathtimer(philo, array);
+	else
+		deathtimer2(philo, array);
+}

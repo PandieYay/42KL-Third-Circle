@@ -1,6 +1,6 @@
 NAME = philo
 NOTLIBFT = notlibft/ft_atoi.c notlibft/ft_atoichecker.c
-SRCS = ./main.c ./errorhandling.c ./msleep.c ./printfunctions.c ./initializestuff.c
+SRCS = ./main.c ./errorhandling.c ./msleep.c ./printfunctions.c ./initializestuff.c ./checkstuff.c
 FLAGS = -Wall -Wextra -Werror -pthread
 # -fsanitize=thread -g3
 

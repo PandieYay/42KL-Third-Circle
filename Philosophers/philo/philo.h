@@ -56,7 +56,13 @@ void	initializevariables(t_array *array, int argc, char **argv);
 void	initializephilos(t_philos *philo, t_array *array);
 void	mutex_forks(t_philos *philo, char c);
 void	philosophers(t_philos *philo, t_array *array, int argc);
+void	initializedeathtimers(t_philos *philo, t_array *array, int argc);
 void	*routine(void	*arg);
 void	*routine2(void	*arg);
+void	deathtimer(t_philos *philo, t_array *array);
+void	deathtimer2(t_philos *philo, t_array *array);
+int		checkphilodead(t_philos *philo);
+int		checkphiloeat(t_philos *philo);
+int		checkphiloeatall(t_philos *philo, t_array *array);
 
 #endif
