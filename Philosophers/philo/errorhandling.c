@@ -36,6 +36,8 @@ int	errorhandling(t_array *array, char **argv)
 
 	if (checkarg(argv) == -1)
 		return (-1);
+	if (array->philos <= 0)
+		return (-1);
 	gettimeofday(&tv, NULL);
 	if (array->philos == 1)
 	{
