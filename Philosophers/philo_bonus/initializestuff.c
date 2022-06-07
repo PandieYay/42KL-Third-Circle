@@ -20,7 +20,8 @@ void	initializephilos(t_philos *philo, t_array *array)
 	while (i < array->philos)
 	{
 		gettimeofday(&array->tv, NULL);
-		philo[i].lastate = (array->tv.tv_sec * 1000) + (array->tv.tv_usec / 1000);
+		philo[i].lastate = (array->tv.tv_sec * 1000)
+			+ (array->tv.tv_usec / 1000);
 		philo[i].sleeptimer = array->sleeptimer;
 		philo[i].timesate = 0;
 		philo[i].eatnum = array->timesphiloeat;
@@ -84,7 +85,7 @@ void	philosophers(t_philos *philo, t_array *array, int argc)
 		{
 			philo[i].pid = fork();
 			if (philo[i].pid == 0)
-				return(process(&philo[i]));
+				return (process(&philo[i]));
 		}
 	}
 	else
@@ -93,7 +94,7 @@ void	philosophers(t_philos *philo, t_array *array, int argc)
 		{
 			philo[i].pid = fork();
 			if (philo[i].pid == 0)
-				return(process(&philo[i]));
+				return (process(&philo[i]));
 		}
 	}
 	i = -1;

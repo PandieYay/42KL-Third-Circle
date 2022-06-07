@@ -32,7 +32,7 @@ static int	checkphiloeat(t_philos *philo)
 		sem_post(philo->array->lock);
 		return (1);
 	}
-		sem_post(philo->array->lock);
+	sem_post(philo->array->lock);
 	return (0);
 }
 

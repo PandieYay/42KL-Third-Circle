@@ -12,38 +12,48 @@
 
 #include "philo.h"
 
-void	deathtimer(t_philos *philo, char c)
+static void	charchecker(t_philos *philo, char c)
 {
-	long		currentime;
+	long	currentime;
 
 	currentime = get_current_time();
 	if (c == 'E')
 	{
-		if ((currentime - philo->lastate + philo->array->eattimer) 
+		if ((currentime - philo->lastate + philo->array->eattimer)
 			> philo->array->deathtimer)
-			while ((get_current_time() - philo->lastate) <= philo->array->deathtimer)
+			while ((get_current_time() - philo->lastate)
+				<= philo->array->deathtimer)
 				usleep(1);
 	}
 	else if (c == 'S')
 	{
-		if ((currentime - philo->lastate + philo->array->sleeptimer) 
+		if ((currentime - philo->lastate + philo->array->sleeptimer)
 			> philo->array->deathtimer)
-			while ((get_current_time() - philo->lastate) <= philo->array->deathtimer)
+			while ((get_current_time() - philo->lastate)
+				<= philo->array->deathtimer)
 				usleep(1);
 	}
 	else if (c == 'B')
-		if ((currentime - philo->lastate + philo->array->eattimer - philo->array->sleeptimer)
-			> philo->array->deathtimer)
-			while ((get_current_time() - philo->lastate) <= philo->array->deathtimer)
+		if ((currentime - philo->lastate + philo->array->eattimer
+				- philo->array->sleeptimer) > philo->array->deathtimer)
+			while ((get_current_time() - philo->lastate)
+				<= philo->array->deathtimer)
 				usleep(1);
+}
+
+void	deathtimer(t_philos *philo, char c)
+{
+	long	currentime;
+
+	charchecker(philo, c);
 	currentime = get_current_time();
 	if ((currentime - philo->lastate) > philo->array->deathtimer)
-		{
-			sem_wait(philo->array->lock);
-			printf("\033[0;31m%ld", currentime);
-			printf(" %d died\n", philo->index + 1);
-			sem_post(philo->array->kill);
-		}
+	{
+		sem_wait(philo->array->lock);
+		printf("\033[0;31m%ld", currentime);
+		printf(" %d died\n", philo->index + 1);
+		sem_post(philo->array->kill);
+	}
 }
 
 void	*deathtimer2(void *arg)
