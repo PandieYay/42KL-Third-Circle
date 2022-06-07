@@ -12,16 +12,17 @@
 
 #include "philo.h"
 
-static int	checkphilodead(t_philos *philo)
+void	*checkallate(void *arg)
 {
-	sem_wait(philo->array->lock);
-	if (philo->array->philodead == 1)
-	{
-		sem_post(philo->array->lock);
-		return (1);
-	}
-	sem_post(philo->array->lock);
-	return (0);
+	int		i;
+	t_array	*array;
+
+	array = arg;
+	i = -1;
+	while (++i < array->philos)
+		sem_wait(array->allate);
+	sem_post(array->kill);
+	return (NULL);
 }
 
 static int	checkphiloeat(t_philos *philo)
@@ -39,8 +40,8 @@ static int	checkphiloeat(t_philos *philo)
 void	process(t_philos *philo)
 {
 	sem_wait(philo->array->sync);
-	philothink(philo);
 	gettimeofday(&philo->array->tv, NULL);
+	philothink(philo);
 	philo->lastate = (philo->array->tv.tv_sec * 1000)
 		+ (philo->array->tv.tv_usec / 1000);
 	while (1)
@@ -66,18 +67,21 @@ void	process2(t_philos *philo)
 	philo->lastate = (philo->array->tv.tv_sec * 1000)
 		+ (philo->array->tv.tv_usec / 1000);
 	philothink(philo);
-	while (checkphilodead(philo) == 0 && checkphiloeat(philo) == 0)
+	while (checkphiloeat(philo) == 0)
 	{
 		sem_forks(philo, 'L');
 		takeforks(philo);
 		philoeating(philo);
+		deathtimer(philo, 'E');
 		msleep(philo->array->eattimer, philo->array);
 		philosleep(philo);
 		sem_forks(philo, 'U');
+		deathtimer(philo, 'S');
 		msleep(philo->array->sleeptimer, philo->array);
 		philothink(philo);
+		deathtimer(philo, 'B');
 	}
-	sem_post(philo->array->kill);
+	sem_post(philo->array->allate);
 }
 
 int	main(int argc, char **argv)

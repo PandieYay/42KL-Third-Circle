@@ -35,6 +35,7 @@ typedef struct s_array {
 	sem_t			*kill;
 	sem_t			*fork;
 	sem_t			*lock;
+	sem_t			*allate;
 }	t_array;
 
 typedef struct s_philos {
@@ -67,5 +68,6 @@ void	killall(t_philos *philo, t_array *array);
 void	deathtimer(t_philos *philo, char c);
 void	*deathtimer2(void *arg);
 long	get_current_time(void);
+void	*checkallate(void *arg);
 
 #endif

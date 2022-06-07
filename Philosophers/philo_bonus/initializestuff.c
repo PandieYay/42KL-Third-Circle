@@ -45,10 +45,12 @@ void	initializevariables(t_array *array, int argc, char **argv)
 	sem_unlink("sync");
 	sem_unlink("kill");
 	sem_unlink("lock");
+	sem_unlink("allate");
 	array->fork = sem_open("forks", O_CREAT, 0777, array->philos);
 	array->sync = sem_open("sync", O_CREAT, 0777, 0);
 	array->kill = sem_open("kill", O_CREAT, 0777, 0);
 	array->lock = sem_open("lock", O_CREAT, 0777, 1);
+	array->allate = sem_open("allate", O_CREAT, 0777, 0);
 	gettimeofday(&array->tv, NULL);
 	if (argc == 6)
 	{
@@ -74,6 +76,28 @@ void	killall(t_philos *philo, t_array *array)
 	sem_unlink("lock");
 }
 
+static void	philosophers2(t_philos *philo, t_array *array)
+{
+	int			i;
+	pthread_t	thread;
+
+	i = -1;
+	while (++i < array->philos)
+	{
+		philo[i].pid = fork();
+		if (philo[i].pid == 0)
+		{
+			process2(&philo[i]);
+			exit(0);
+		}
+	}
+	i = -1;
+	while (++i < array->philos)
+		sem_post(array->sync);
+	pthread_create(&thread, NULL, &checkallate, array);
+	pthread_detach(thread);
+}
+
 void	philosophers(t_philos *philo, t_array *array, int argc)
 {
 	int	i;
@@ -85,19 +109,15 @@ void	philosophers(t_philos *philo, t_array *array, int argc)
 		{
 			philo[i].pid = fork();
 			if (philo[i].pid == 0)
-				return (process(&philo[i]));
+			{
+				process(&philo[i]);
+				exit(0);
+			}
 		}
+		i = -1;
+		while (++i < array->philos)
+			sem_post(array->sync);
 	}
 	else
-	{
-		while (++i < array->philos)
-		{
-			philo[i].pid = fork();
-			if (philo[i].pid == 0)
-				return (process(&philo[i]));
-		}
-	}
-	i = -1;
-	while (++i < array->philos)
-		sem_post(array->sync);
+		philosophers2(philo, array);
 }
