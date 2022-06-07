@@ -31,15 +31,12 @@ void	takeforks(t_philos *philo)
 void	philoeating(t_philos *philo)
 {
 	sem_wait(philo->array->lock);
-	if (philo->array->philodead == 0)
-	{
-		gettimeofday(&philo->array->tv, NULL);
-		philo->lastate = (philo->array->tv.tv_sec * 1000)
-			+ (philo->array->tv.tv_usec / 1000);
-		printf("\033[0;32m%ld", philo->lastate);
-		printf(" %d is eating\n", philo->index + 1);
-		++philo->timesate;
-	}
+	gettimeofday(&philo->array->tv, NULL);
+	philo->lastate = (philo->array->tv.tv_sec * 1000)
+		+ (philo->array->tv.tv_usec / 1000);
+	printf("\033[0;32m%ld", philo->lastate);
+	printf(" %d is eating\n", philo->index + 1);
+	++philo->timesate;
 	sem_post(philo->array->lock);
 }
 
@@ -73,8 +70,10 @@ void	sem_forks(t_philos *philo, char c)
 {
 	if (c == 'L')
 	{
+		deathtimer(philo, 'N');
 		sem_wait(philo->array->fork);
 		sem_wait(philo->array->fork);
+		deathtimer(philo, 'N');
 	}
 	else if (c == 'U')
 	{

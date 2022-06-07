@@ -20,15 +20,14 @@ void	initializephilos(t_philos *philo, t_array *array)
 	while (i < array->philos)
 	{
 		gettimeofday(&array->tv, NULL);
+		philo[i].lastate = (array->tv.tv_sec * 1000) + (array->tv.tv_usec / 1000);
 		philo[i].sleeptimer = array->sleeptimer;
 		philo[i].timesate = 0;
 		philo[i].eatnum = array->timesphiloeat;
 		philo[i].index = i;
 		philo[i].array = array;
-		philo[i].next = &philo[i + 1];
 		i++;
 	}
-	philo[i - 1].next = &philo[0];
 }
 
 void	initializevariables(t_array *array, int argc, char **argv)
@@ -61,12 +60,9 @@ void	killall(t_philos *philo, t_array *array)
 {
 	int	i;
 
-	i = 0;
-	while (i < array->philos)
-	{
+	i = -1;
+	while (++i < array->philos)
 		kill(philo[i].pid, SIGTERM);
-		i++;
-	}
 	sem_close(array->sync);
 	sem_close(array->kill);
 	sem_close(array->fork);
@@ -77,7 +73,7 @@ void	killall(t_philos *philo, t_array *array)
 	sem_unlink("lock");
 }
 
-int	philosophers(t_philos *philo, t_array *array, int argc)
+void	philosophers(t_philos *philo, t_array *array, int argc)
 {
 	int	i;
 
@@ -88,7 +84,7 @@ int	philosophers(t_philos *philo, t_array *array, int argc)
 		{
 			philo[i].pid = fork();
 			if (philo[i].pid == 0)
-				process(&philo[i]);
+				return(process(&philo[i]));
 		}
 	}
 	else
@@ -97,11 +93,10 @@ int	philosophers(t_philos *philo, t_array *array, int argc)
 		{
 			philo[i].pid = fork();
 			if (philo[i].pid == 0)
-				process2(&philo[i]);
+				return(process(&philo[i]));
 		}
 	}
 	i = -1;
 	while (++i < array->philos)
 		sem_post(array->sync);
-	return (0);
 }

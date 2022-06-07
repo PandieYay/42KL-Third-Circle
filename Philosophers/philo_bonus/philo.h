@@ -44,6 +44,7 @@ typedef struct s_philos {
 	int				eatnum;
 	int				index;
 	pid_t			pid;
+	pthread_t		id;
 	t_array			*array;
 	struct s_philos	*next;
 }	t_philos;
@@ -59,9 +60,12 @@ void	philothink(t_philos *philo);
 void	initializevariables(t_array *array, int argc, char **argv);
 void	initializephilos(t_philos *philo, t_array *array);
 void	sem_forks(t_philos *philo, char c);
-int		philosophers(t_philos *philo, t_array *array, int argc);
+void	philosophers(t_philos *philo, t_array *array, int argc);
 void	process(t_philos *philo);
 void	process2(t_philos *philo);
 void	killall(t_philos *philo, t_array *array);
+void	deathtimer(t_philos *philo, char c);
+void	*deathtimer2(void *arg);
+long	get_current_time(void);
 
 #endif
