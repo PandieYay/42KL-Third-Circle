@@ -15,12 +15,10 @@
 static int	checkarg(char **argv)
 {
 	int	i;
-	int	k;
 
 	i = 0;
 	while (argv[++i] != NULL)
 	{
-		k = i;
 		if (ft_atoichecker(argv[i]) == 'K')
 		{
 			write(1, "\033[0;31mError\n", 14);
@@ -37,7 +35,10 @@ int	errorhandling(t_array *array, char **argv)
 	if (checkarg(argv) == -1)
 		return (-1);
 	if (array->philos <= 0)
+	{
+		write(1, "\033[0;31mError\n", 14);
 		return (-1);
+	}
 	gettimeofday(&tv, NULL);
 	if (array->philos == 1)
 	{
