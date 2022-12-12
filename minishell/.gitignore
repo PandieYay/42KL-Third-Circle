@@ -1,0 +1,10 @@
+objs/
+minishell
+*.o
+trash/
+README.md
+rl_quote
+test
+trash.c
+libft/libft.a
+.vscode
